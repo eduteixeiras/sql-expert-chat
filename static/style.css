@@ -388,7 +388,6 @@ body {
     }
 }
 
-/* Respeita preferência do usuário por menos movimento */
 @media (prefers-reduced-motion: reduce) {
     .message,
     .status-pill__dot,

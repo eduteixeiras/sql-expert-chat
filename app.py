@@ -1,12 +1,33 @@
+# -*- coding: utf-8 -*-
+"""
+app.py
+=================================================================
+BACKEND - Mini Sistema de Chat Especializado (IA Especialista em SQL)
+Disciplina: Engenharia de Inteligência Artificial
+
+Responsabilidades deste arquivo:
+1. Servir o Frontend (index.html, style.css, script.js).
+2. Expor uma rota POST ("/api/chat") que recebe a mensagem do usuário
+   em formato JSON.
+3. Montar a requisição para a API do OpenRouter, injetando o
+   "System Prompt" que define a persona de Especialista em SQL.
+4. Repassar a resposta do modelo de volta ao Frontend, também em JSON.
+
+=================================================================
+"""
+
 import os
 import traceback
 import requests
 from flask import Flask, request, jsonify, send_from_directory
 from dotenv import load_dotenv
 
+# Carrega variáveis de ambiente
+load_dotenv()
 
-load_dotenv()   # Carrega variáveis de ambiente definidas no arquivo .env
-
+# -----------------------------------------------------------------
+# Instancia o app Flask.
+# -----------------------------------------------------------------
 app = Flask(__name__, static_folder="static", static_url_path="")
 
 # -----------------------------------------------------------------
@@ -15,12 +36,12 @@ app = Flask(__name__, static_folder="static", static_url_path="")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
+# O modelo pode ser trocado via variável de ambiente
 MODEL_NAME = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-20b:free")
 
 # -----------------------------------------------------------------
 # SYSTEM PROMPT
 # -----------------------------------------------------------------
-
 SYSTEM_PROMPT = """
 Você é o "Prof. QueryMind", um Engenheiro de Banco de Dados Sênior e
 Professor universitário especialista em SQL (compatível com os dialetos
@@ -90,7 +111,9 @@ def chat():
         return jsonify({"error": "Campo 'message' é obrigatório no corpo JSON."}), 400
 
     user_message = str(data.get("message", "")).strip()
-
+    # O histórico é gerenciado pelo CLIENTE (estado em memória no
+    # navegador) e reenviado em cada requisição, já que o Flask, por
+    # padrão, não guarda estado entre requisições (ver limitações).
     history = data.get("history", [])
 
     if not user_message:
@@ -145,10 +168,10 @@ def chat():
         response = requests.post(
             OPENROUTER_URL,
             headers=headers,
-            json=payload,
+            json=payload,     # 'requests' já serializa o dict para JSON
             timeout=30
         )
-        response.raise_for_status()
+        response.raise_for_status()  # lança exceção se status >= 400
 
         result = response.json()
         ai_reply = result["choices"][0]["message"]["content"]
@@ -164,7 +187,8 @@ def chat():
 
     except requests.exceptions.HTTPError:
         # Tenta extrair a mensagem de erro retornada pela própria API.
-
+        # Isso é muito comum quando o MODEL_NAME configurado não existe
+        # mais no catálogo gratuito do OpenRouter
         try:
             api_error = response.json()
         except ValueError:
@@ -187,6 +211,9 @@ def chat():
         return jsonify({"error": f"Falha de comunicação com a API OpenRouter: {str(e)}"}), 502
 
     except Exception as e:
+        # -------------------------------------------------------------
+        # Rede de segurança final: QUALQUER erro não previsto acima cai aqui.
+        # -------------------------------------------------------------
         print("[chat] ERRO INESPERADO:")
         print(traceback.format_exc())
         return jsonify({"error": f"Erro interno inesperado no servidor: {str(e)}"}), 500
@@ -196,7 +223,8 @@ def chat():
 # Execução local (modo de desenvolvimento)
 # -----------------------------------------------------------------
 if __name__ == "__main__":
-
+    # Confirmação de inicialização: ajuda a diagnosticar rapidamente se o
+    # .env foi carregado corretamente, sem nunca imprimir a chave inteira.
     if OPENROUTER_API_KEY:
         masked_key = OPENROUTER_API_KEY[:8] + "..." + OPENROUTER_API_KEY[-4:]
         print(f"[startup] OPENROUTER_API_KEY carregada: {masked_key}")
@@ -207,4 +235,5 @@ if __name__ == "__main__":
 
     port = int(os.getenv("PORT", 5000))
 
+    # debug=True habilita auto-reload e mensagens de erro detalhadas
     app.run(debug=True, host="0.0.0.0", port=port)
