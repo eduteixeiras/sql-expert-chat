@@ -43,8 +43,3 @@ sql_expert_chat/
 
 5. Acesse no navegador: http://localhost:5000
 
-## Observação sobre custos
-
-O OpenRouter cobra por token apenas dos modelos pagos. Existem modelos
-gratuitos no catálogo (com sufixo `:free`) que podem ser usados para
-testes sem custo — basta ajustar a variável `OPENROUTER_MODEL` no `.env`.
