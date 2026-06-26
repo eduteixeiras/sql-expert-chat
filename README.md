@@ -35,7 +35,7 @@ Nenhuma chave de API é exposta ao navegador — o Flask atua como um proxy segu
 
 ## 🌐 Demo
 
-🔗 **Link da aplicação:** `(https://sql-expert-chat.onrender.com/)`
+🔗 **Link da aplicação:** `https://sql-expert-chat.onrender.com/`
 
 > ⚠️ Hospedado no plano gratuito do Render: o serviço hiberna após 15 minutos de inatividade. Se o link demorar de 30 a 60 segundos para responder na primeira visita, é esperado — o serviço está "acordando".
 
