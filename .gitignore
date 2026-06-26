@@ -1,0 +1,15 @@
+# Segredos - NUNCA suba isso para o GitHub
+.env
+
+# Ambiente virtual
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store

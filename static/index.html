@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prof. QueryMind | Especialista em SQL</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Fontes: Space Grotesk (display/cabeçalhos), Inter (corpo de texto) e
+         JetBrains Mono (trechos de código SQL), carregadas do Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ===================================================== -->
+    <!-- CABEÇALHO: identidade da IA especialista                -->
+    <!-- ===================================================== -->
+    <header class="app-header">
+        <div class="app-header__identity">
+            <div class="avatar" aria-hidden="true">
+                <span class="avatar__glyph">SQL</span>
+            </div>
+            <div class="app-header__text">
+                <h1>Prof. QueryMind</h1>
+                <p class="app-header__subtitle">Especialista em Banco de Dados &amp; SQL</p>
+            </div>
+        </div>
+        <span class="status-pill" id="status-pill">
+            <span class="status-pill__dot"></span> online
+        </span>
+    </header>
+
+    <!-- ===================================================== -->
+    <!-- ÁREA PRINCIPAL: histórico de mensagens (chat log)       -->
+    <!-- ===================================================== -->
+    <main class="chat-window" aria-live="polite">
+        <section class="chat-log" id="chat-log">
+            <!-- Mensagem inicial de boas-vindas (estática, já no HTML) -->
+            <article class="message message--assistant">
+                <div class="message__avatar" aria-hidden="true">SQL</div>
+                <div class="message__bubble">
+                    <p>
+                        Olá! Sou o <strong>Prof. QueryMind</strong>, sua IA especialista em
+                        bancos de dados relacionais e SQL. Pode me perguntar sobre
+                        <code>JOINs</code>, normalização, índices, modelagem ER,
+                        otimização de consultas e muito mais.
+                    </p>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <!-- ===================================================== -->
+    <!-- INDICADOR DE "DIGITANDO..." (exibido durante a chamada à API) -->
+    <!-- ===================================================== -->
+    <div class="typing-indicator" id="typing-indicator" hidden>
+        <span></span><span></span><span></span>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- RODAPÉ: formulário de envio de mensagem                 -->
+    <!-- ===================================================== -->
+    <footer class="composer">
+        <form id="chat-form" class="composer__form" autocomplete="off">
+            <label for="user-input" class="visually-hidden">Digite sua pergunta sobre SQL</label>
+            <input
+                type="text"
+                id="user-input"
+                class="composer__input"
+                placeholder="Ex.: Qual a diferença entre INNER JOIN e LEFT JOIN?"
+                required
+            >
+            <button type="submit" class="composer__button" id="send-button" aria-label="Enviar mensagem">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </form>
+        <p class="composer__hint">Prof. QueryMind pode cometer erros. Sempre valide consultas críticas em ambiente de testes.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

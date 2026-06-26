@@ -1,0 +1,423 @@
+/* =====================================================================
+   style.css
+   ---------------------------------------------------------------------
+   Sistema de tokens (paleta, tipografia, espaçamento) pensado para a
+   persona "Prof. QueryMind": um cruzamento entre console de banco de
+   dados (tons escuros, grade sutil, monoespaçada para código) e sala
+   de aula (acentos quentes, tom acolhedor).
+
+   Paleta:
+     --bg-base       #0F1620  (fundo geral, "tela de terminal")
+     --bg-panel      #16202C  (cabeçalho / rodapé)
+     --bg-bubble-ai  #1B2733  (balão de resposta da IA)
+     --bg-bubble-me  #20384A  (balão do usuário)
+     --accent-teal   #4FD1C5  (destaque "SQL", links, foco)
+     --accent-amber  #F2A65A  (assinatura visual / professor)
+     --text-primary  #E8EDF2
+     --text-muted    #8FA0B3
+     --border-soft   #25313F
+
+   Tipografia:
+     Display  -> "Space Grotesk" (cabeçalho, nome da IA)
+     Corpo    -> "Inter"
+     Código   -> "JetBrains Mono" (trechos SQL, avatar)
+   ===================================================================== */
+
+:root {
+    --bg-base: #0F1620;
+    --bg-panel: #16202C;
+    --bg-bubble-ai: #1B2733;
+    --bg-bubble-me: #20384A;
+    --accent-teal: #4FD1C5;
+    --accent-amber: #F2A65A;
+    --text-primary: #E8EDF2;
+    --text-muted: #8FA0B3;
+    --border-soft: #25313F;
+
+    --font-display: "Space Grotesk", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+
+    --radius-md: 10px;
+    --radius-lg: 16px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background-color: var(--bg-base);
+    /* Grade sutil ao fundo, evocando linhas/colunas de uma tabela de banco
+       de dados, sem competir com o conteúdo do chat. */
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}
+
+/* =====================================================================
+   CABEÇALHO
+   ===================================================================== */
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 24px;
+    background-color: var(--bg-panel);
+    border-bottom: 1px solid var(--border-soft);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.app-header__identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(155deg, var(--accent-teal), #2C9E93);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.avatar__glyph {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: #07211D;
+}
+
+.app-header__text h1 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.app-header__subtitle {
+    margin: 2px 0 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border-soft);
+    border-radius: 999px;
+    padding: 4px 10px;
+}
+
+.status-pill__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--accent-teal);
+    box-shadow: 0 0 0 0 rgba(79, 209, 197, 0.6);
+    animation: pulse 2.4s ease-out infinite;
+}
+
+@keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(79, 209, 197, 0.5); }
+    70%  { box-shadow: 0 0 0 6px rgba(79, 209, 197, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(79, 209, 197, 0); }
+}
+
+/* =====================================================================
+   JANELA DE CHAT / HISTÓRICO DE MENSAGENS
+   ===================================================================== */
+.chat-window {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.chat-log {
+    width: 100%;
+    max-width: 760px;
+    padding: 24px 20px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.message {
+    display: flex;
+    gap: 10px;
+    max-width: 100%;
+    animation: rise 0.25s ease-out;
+}
+
+@keyframes rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.message__avatar {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message--assistant .message__avatar {
+    background: linear-gradient(155deg, var(--accent-teal), #2C9E93);
+    color: #07211D;
+}
+
+.message--user {
+    flex-direction: row-reverse;
+    align-self: flex-end;
+}
+
+.message--user .message__avatar {
+    background-color: var(--accent-amber);
+    color: #2B1A06;
+}
+
+.message__bubble {
+    padding: 12px 16px;
+    border-radius: var(--radius-lg);
+    line-height: 1.55;
+    font-size: 0.92rem;
+}
+
+.message--assistant .message__bubble {
+    background-color: var(--bg-bubble-ai);
+    border: 1px solid var(--border-soft);
+    border-top-left-radius: 4px;
+}
+
+.message--user .message__bubble {
+    background-color: var(--bg-bubble-me);
+    border-top-right-radius: 4px;
+}
+
+.message__bubble p {
+    margin: 0 0 8px;
+}
+
+.message__bubble p:last-child {
+    margin-bottom: 0;
+}
+
+.message__bubble code {
+    font-family: var(--font-mono);
+    background-color: rgba(79, 209, 197, 0.12);
+    color: var(--accent-teal);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.message__bubble pre {
+    background-color: #0B1118;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+.message__bubble pre code {
+    background: none;
+    padding: 0;
+    color: #BEEFE7;
+}
+
+.message--error .message__bubble {
+    background-color: rgba(239, 88, 88, 0.12);
+    border: 1px solid rgba(239, 88, 88, 0.35);
+    color: #FFD6D6;
+}
+
+/* =====================================================================
+   INDICADOR DE "DIGITANDO..."
+   ===================================================================== */
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px 10px 58px;
+    width: 100%;
+}
+
+.typing-indicator[hidden] {
+    display: none;
+}
+
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--text-muted);
+    animation: blink 1.2s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes blink {
+    0%, 80%, 100% { opacity: 0.2; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* =====================================================================
+   RODAPÉ / CAMPO DE ENVIO
+   ===================================================================== */
+.composer {
+    background-color: var(--bg-panel);
+    border-top: 1px solid var(--border-soft);
+    padding: 14px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.composer__form {
+    width: 100%;
+    max-width: 760px;
+    display: flex;
+    gap: 10px;
+}
+
+.composer__input {
+    flex: 1;
+    background-color: var(--bg-base);
+    border: 1px solid var(--border-soft);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.composer__input::placeholder {
+    color: var(--text-muted);
+}
+
+.composer__input:focus-visible {
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.18);
+}
+
+.composer__button {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: var(--accent-teal);
+    color: #07211D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.12s ease, background-color 0.15s ease;
+}
+
+.composer__button:hover {
+    background-color: #6FE0D5;
+}
+
+.composer__button:active {
+    transform: scale(0.94);
+}
+
+.composer__button:disabled {
+    background-color: var(--border-soft);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.composer__button:focus-visible {
+    outline: 2px solid var(--accent-teal);
+    outline-offset: 2px;
+}
+
+.composer__hint {
+    max-width: 760px;
+    width: 100%;
+    margin: 8px 0 0;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* =====================================================================
+   RESPONSIVIDADE
+   ===================================================================== */
+@media (max-width: 560px) {
+    .app-header {
+        padding: 12px 16px;
+    }
+
+    .app-header__subtitle {
+        display: none;
+    }
+
+    .chat-log {
+        padding: 18px 14px 8px;
+    }
+
+    .message__bubble {
+        font-size: 0.88rem;
+    }
+
+    .composer {
+        padding: 12px 14px 14px;
+    }
+}
+
+/* Respeita preferência do usuário por menos movimento */
+@media (prefers-reduced-motion: reduce) {
+    .message,
+    .status-pill__dot,
+    .typing-indicator span {
+        animation: none !important;
+    }
+}
