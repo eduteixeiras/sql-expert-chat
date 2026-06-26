@@ -30,19 +30,13 @@ const chatLog = document.getElementById("chat-log");
 const sendButton = document.getElementById("send-button");
 const typingIndicator = document.getElementById("typing-indicator");
 
-// Endpoint do backend Flask. Como o frontend é servido pelo próprio
-// Flask, um caminho relativo é suficiente.
+// Endpoint do backend Flask. 
 const API_ENDPOINT = "/api/chat";
 
-// ---------------------------------------------------------------------
 // Estado da conversa (mantido apenas em memória / nesta aba do navegador).
-// Cada item segue o formato: { role: "user" | "assistant", content: "..." }
-// ---------------------------------------------------------------------
 let conversationHistory = [];
 
-// ---------------------------------------------------------------------
 // Listener principal: submissão do formulário de envio
-// ---------------------------------------------------------------------
 chatForm.addEventListener("submit", async (event) => {
     event.preventDefault(); // evita o reload padrão da página
 
@@ -67,14 +61,13 @@ chatForm.addEventListener("submit", async (event) => {
             },
             body: JSON.stringify({
                 message: message,
-                history: conversationHistory.slice(0, -1) // histórico ANTES desta mensagem
+                history: conversationHistory.slice(0, -1)
             })
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            // O backend retornou um erro estruturado em JSON: { error, details? }
             throw new Error(data.error || "Erro desconhecido ao consultar a API.");
         }
 
@@ -96,8 +89,8 @@ chatForm.addEventListener("submit", async (event) => {
 
 /**
  * Insere uma nova mensagem no histórico visual do chat.
- * @param {"user"|"assistant"|"error"} role - quem enviou a mensagem
- * @param {string} content - texto (pode conter blocos de código ```sql ... ```)
+ * @param {"user"|"assistant"|"error"} role
+ * @param {string} content
  */
 function appendMessage(role, content) {
     const article = document.createElement("article");
@@ -123,17 +116,9 @@ function appendMessage(role, content) {
     chatLog.scrollTop = chatLog.scrollHeight;
 }
 
-/**
- * Converte o texto da IA (que pode conter Markdown simples vindo do
- * modelo, como blocos ```sql ... ``` e **negrito**) em HTML seguro.
- * Faz um escape básico de HTML antes de aplicar as transformações,
- * para evitar problemas de injeção de marcação vinda da própria
- * resposta do modelo.
- */
 function renderContent(rawText) {
     const escaped = escapeHtml(rawText);
 
-    // Blocos de código: ```sql ... ``` ou ``` ... ```
     let html = escaped.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
         return `<pre><code class="lang-${lang || "text"}">${code.trim()}</code></pre>`;
     });
@@ -153,14 +138,12 @@ function renderContent(rawText) {
     return html;
 }
 
-/** Escapa caracteres especiais de HTML para evitar injeção de marcação. */
 function escapeHtml(text) {
     const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
 }
 
-/** Mostra ou oculta o indicador de "digitando...". */
 function showTypingIndicator(visible) {
     typingIndicator.hidden = !visible;
     if (visible) {
@@ -168,7 +151,6 @@ function showTypingIndicator(visible) {
     }
 }
 
-/** Habilita/desabilita o campo de input e o botão durante a chamada à API. */
 function setComposerDisabled(disabled) {
     userInput.disabled = disabled;
     sendButton.disabled = disabled;
